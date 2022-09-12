@@ -10,14 +10,40 @@
 #                                                                              #
 # **************************************************************************** #
 
-all:
-	@gcc -Wall -Wextra -Werror server.c utils.c -o server
-	@gcc -Wall -Wextra -Werror client.c utils.c -o client
+SRC_SERVER	= server.c
+
+OBJ_SERVER	= $(SRC_SERVER:.c=.o)
+
+SRC_CLIENT	= client.c
+
+OBJ_CLIENT	= $(SRC_CLIENT:.c=.o)
+
+SRC_UTILS	= utils.c
+
+OBJ_UTILS	= $(SRC_UTILS:.c=.o)
+
+CC		= gcc
+
+CFLAGS		= -Wall -Wextra -Werror -I.
+
+SERVER_NAME	= server
+
+CLIENT_NAME	= client
+
+all: $(SERVER_NAME) $(CLIENT_NAME)
+
+server: $(OBJ_SERVER) $(OBJ_UTILS)
+	$(CC) $(CFLAGS) $(OBJ_SERVER) $(OBJ_UTILS) -o $(SERVER_NAME)
+
+client:	$(OBJ_CLIENT) $(OBJ_UTILS)
+	$(CC) $(CFLAGS) $(OBJ_CLIENT) $(OBJ_UTILS) -o $(CLIENT_NAME)
 
 clean:
-	@rm -f server
-	@rm -f client
+	rm -rf *.o
 
-re: clean all
+fclean:	clean
+	rm -rf $(SERVER_NAME) $(CLIENT_NAME)
 
-.PHONY:			all clean  re
+re:	fclean all
+
+.PHONY: all clean fclean re
