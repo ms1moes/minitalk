@@ -22,6 +22,7 @@ void	end_prog(pid_t s_pid)
 		usleep(50);
 		kill(s_pid, SIGUSR2);
 	}
+	write(1, "\nfinished successfully\n", 22);
 	exit(0);
 }
 
@@ -57,7 +58,7 @@ void	c_handler(int sig)
 
 	if (sig == SIGUSR1)
 	{
-		write(1, "\rbytes received: ", 17);
+		write(1, "\rnumber of bytes:  ", 19);
 		ft_putunbr(++bytes);
 	}
 	send_bit(0, NULL);
