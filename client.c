@@ -11,63 +11,70 @@
 /* ************************************************************************** */
 
 #include "minitalk.h"
-#include <stdio.h>
 
-static int	ft_verify_input(int ac, char **av)
+void	end_prog(pid_t s_pid)
 {
 	int	i;
-
-	i = -1;
-	if (ac != 3)
-		return (1);
-	while (av[1][++i])
-	{
-		if (ft_isdigit(av[1][i]) == 0)
-			return (1);
-	}
-	return (0);
-}
-
-static void	reply(int sig)
-{
-	if (sig == SIGUSR1)
-		ft_putstr("[message received]\n");
-}
-
-static void	ft_char_to_bits(unsigned char c, int pid)
-{
-	int		i;
 
 	i = 8;
 	while (i--)
 	{
-		if ((c % 2) == 1)
-			kill(pid, SIGUSR2);
-		if ((c % 2) == 0)
-			kill(pid, SIGUSR1);
-		usleep(500);
-		c /= 2;
+		usleep(50);
+		kill(s_pid, SIGUSR2);
 	}
+	exit(0);
+}
+
+void	send_bit(pid_t pid, char *s)
+{
+	static int				i = 8;
+	static unsigned char	c;
+	static char				*str;
+	static pid_t			s_pid;
+
+	if (s)
+	{
+		str = s;
+		s_pid = pid;
+		c = *str;
+	}
+	if (!i)
+	{
+		i = 8;
+		c = *(++str);
+		if (!c)
+			end_prog(s_pid);
+	}
+	if (c >> --i & 1)
+		kill(s_pid, SIGUSR1);
+	else
+		kill(s_pid, SIGUSR2);
+}
+
+void	c_handler(int sig)
+{
+	static int	bytes = 0;
+
+	if (sig == SIGUSR1)
+	{
+		write(1, "\rbytes received: ", 17);
+		ft_putunbr(++bytes);
+	}
+	send_bit(0, NULL);
 }
 
 int	main(int ac, char **av)
 {
-	int		pid;
-	int		i;
-	char	*msg;
-
 	if (ft_verify_input(ac, av))
 	{
-		ft_putstr("Input error!\n");
-		return (0);
+		write(1, "Error: invalid input\n", 21);
+		return (1);
 	}
-	pid = ft_atoi(av[1]);
-	msg = av[2];
-	i = -1;
-	signal(SIGUSR1, reply);
-	signal(SIGUSR2, reply);
-	while (msg[++i])
-		ft_char_to_bits(msg[i], pid);
-	ft_char_to_bits('\n', pid);
-	ft_char_to_bits('\0', pid);
+	signal(SIGUSR1, c_handler);
+	signal(SIGUSR2, c_handler);
+	if (!ft_strlen(av[2]))
+		exit(0);
+	send_bit(ft_atoi(av[1]), av[2]);
+	while(1)
+		pause();
 }

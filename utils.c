@@ -22,28 +22,41 @@ int	ft_atoi(char *str)
 	return (number);
 }
 
-void	ft_putstr(char *str)
+size_t   ft_strlen(const char *s)
 {
-	int	i;
+	size_t	i;
 
-	i = -1;
-	while (str[++i])
-		ft_putchar(str[i]);
+	if (!s)
+		return (0);
+	i = 0;
+	while (s[i])
+		i++;
+	return (i);
 }
 
 int	ft_isdigit(int c)
 {
-	return ((c >= '0' && c <= '9'));
+	return (c >= '0' && c <= '9');
 }
 
 void	ft_putunbr(unsigned int n)
 {
 	if (n >= 10)
 		ft_putunbr((n / 10));
-	ft_putchar((n % 10) + '0');
+	write(1, &"0123456789"[n % 10], 1);
 }
 
-void	ft_putchar(char c)
+int	ft_verify_input(int ac, char **av)
 {
-	write(1, &c, 1);
+	int	i;
+
+	i = -1;
+	if (ac != 3)
+		return (1);
+	while (av[1][++i])
+	{
+		if (ft_isdigit(av[1][i]) == 0)
+			return (1);
+	}
+	return (0);
 }

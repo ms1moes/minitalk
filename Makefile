@@ -22,9 +22,10 @@ SRC_UTILS	= utils.c
 
 OBJ_UTILS	= $(SRC_UTILS:.c=.o)
 
+
 CC		= gcc
 
-CFLAGS		= -Wall -Wextra -Werror -I.
+CFLAGS		= -Wall -Wextra -Werror #-g -fsanitize=address
 
 SERVER_NAME	= server
 
@@ -35,7 +36,7 @@ all: $(SERVER_NAME) $(CLIENT_NAME)
 server: $(OBJ_SERVER) $(OBJ_UTILS)
 	$(CC) $(CFLAGS) $(OBJ_SERVER) $(OBJ_UTILS) -o $(SERVER_NAME)
 
-client:	$(OBJ_CLIENT) $(OBJ_UTILS)
+client:	$(OBJ_CLIENT) $(OBJ_UTILS) 
 	$(CC) $(CFLAGS) $(OBJ_CLIENT) $(OBJ_UTILS) -o $(CLIENT_NAME)
 
 clean:

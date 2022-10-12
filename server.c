@@ -12,45 +12,47 @@
 
 #include "minitalk.h"
 
-void	signal_handler(int signal, siginfo_t *info, void *null)
+void	s_handler(int sig, siginfo_t *siginfo, void *unused)
 {
-	static int		j = 1;
-	static int		ascii = 0;
-	static int		i = 0;
-	static pid_t	client_pid = 0;
+	static unsigned char	c = 0;
+	static int				i = 0;
+	static pid_t			c_pid = 0;
 
-	(void)null;
-	if (!client_pid)
-		client_pid = info->si_pid;
-	if (signal == SIGUSR2)
-		ascii += j;
-		j *= 2;
-		i++;
-	if (i == 8)
+	(void)unused;
+	if (!c_pid)
+		c_pid = siginfo->si_pid;
+	c |= (sig == SIGUSR1);
+	if (++i == 8)
 	{
-		write(1, &ascii, 1);
-		if (ascii == '\0')
-		{
-			kill(client_pid, SIGUSR1);
-			client_pid = 0;
-		}
-		j = 1;
-		ascii = 0;
 		i = 0;
+		if (c == 0)
+		{
+			c_pid = 0;
+			return ;
+		}
+		write(1, &c, 1);
+		c = 0;
+		kill(c_pid, SIGUSR1);
+	}
+	else
+	{
+		c <<= 1;
+		kill(c_pid, SIGUSR2);
 	}
 }
 
-int	main(void)
+//Ao usar a flag SA_SIGINFO a função que recebe os sinais passa a ter 3 parametros em vez de 1. e em vez de usar sa_handler é necessario usar sa_sigaction
+int main(void)
 {
-	struct sigaction	s_sigaction;
+	struct sigaction	sa;
 
-	ft_putstr("PID: ");
+	write(1, "Server PID: ", 12);
 	ft_putunbr(getpid());
-	ft_putstr("\n");
-	s_sigaction.sa_sigaction = signal_handler;
-	s_sigaction.sa_flags = SA_SIGINFO;
-	sigaction(SIGUSR1, &s_sigaction, 0);
-	sigaction(SIGUSR2, &s_sigaction, 0);
+	write(1, "\n", 1);
+	sa.sa_flags = SA_SIGINFO;
+	sa.sa_sigaction = s_handler;
+	sigaction(SIGUSR1, &sa, 0);
+	sigaction(SIGUSR2, &sa, 0);
 	while (1)
 		pause();
 }
