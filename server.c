@@ -12,10 +12,52 @@
 
 #include "minitalk.h"
 
+static char	*start_str(char c)
+{
+	char	*str;
+
+	str = malloc(2);
+	if (!str)
+		return (NULL);
+	str[0] = c;
+	str[1] = '\0';
+	return (str);
+}
+
+static char	*add_char(char *str, char c)
+{
+	char	*new;
+	int		i;
+
+	if (!str)
+		return (start_str(c));
+	new = malloc((ft_strlen(str) + 2));
+	if (!new)
+	{
+		free(str);
+		return (NULL);
+	}
+	i = -1;
+	while (str[++i])
+		new[i] = str[i];
+	free(str);
+	new[i++] = c;
+	new[i] = '\0';
+	return (new);
+}
+
+char *print_free(char *str)
+{
+	write(1, str, ft_strlen(str));
+	free(str);
+	return (NULL);
+}
+
 void	s_handler(int sig, siginfo_t *siginfo, void *unused)
 {
-	static unsigned char	c = 0;
+	static char				c = 0;
 	static int				i = 0;
+	static char				*str = NULL;
 	static pid_t			c_pid = 0;
 
 	(void)unused;
@@ -27,10 +69,11 @@ void	s_handler(int sig, siginfo_t *siginfo, void *unused)
 		i = 0;
 		if (c == 0)
 		{
+			str = print_free(str);
 			c_pid = 0;
 			return ;
 		}
-		write(1, &c, 1);
+		str = add_char(str, c);
 		c = 0;
 		kill(c_pid, SIGUSR1);
 	}
@@ -41,15 +84,17 @@ void	s_handler(int sig, siginfo_t *siginfo, void *unused)
 	}
 }
 
-//Ao usar a flag SA_SIGINFO a função que recebe os sinais passa a ter 3 parametros em vez de 1. e em vez de usar sa_handler é necessario usar sa_sigaction
 int main(void)
 {
 	struct sigaction	sa;
+	sigset_t			mask;
 
 	write(1, "Server PID: ", 12);
 	ft_putunbr(getpid());
 	write(1, "\n", 1);
+	sigfillset(&mask);
 	sa.sa_flags = SA_SIGINFO;
+	sa.sa_mask = mask;
 	sa.sa_sigaction = s_handler;
 	sigaction(SIGUSR1, &sa, 0);
 	sigaction(SIGUSR2, &sa, 0);

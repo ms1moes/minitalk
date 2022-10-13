@@ -25,7 +25,7 @@ OBJ_UTILS	= $(SRC_UTILS:.c=.o)
 
 CC		= gcc
 
-CFLAGS		= -Wall -Wextra -Werror #-g -fsanitize=address
+CFLAGS		= -Wall -Wextra -Werror -g #-fsanitize=address
 
 SERVER_NAME	= server
 

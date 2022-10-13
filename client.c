@@ -29,7 +29,7 @@ void	end_prog(pid_t s_pid)
 void	send_bit(pid_t pid, char *s)
 {
 	static int				i = 8;
-	static unsigned char	c;
+	static char				c;
 	static char				*str;
 	static pid_t			s_pid;
 
