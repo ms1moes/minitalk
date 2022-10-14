@@ -26,21 +26,6 @@ void	end_prog(pid_t s_pid)
 	exit(0);
 }
 
-int	ft_verify_input(int ac, char **av)
-{
-	int	i;
-
-	i = -1;
-	if (ac != 3)
-		return (1);
-	while (av[1][++i])
-	{
-		if (ft_isdigit(av[1][i]) == 0)
-			return (1);
-	}
-	return (0);
-}
-
 void	send_bit(pid_t pid, char *s)
 {
 	static int				i = 8;
@@ -91,6 +76,6 @@ int	main(int ac, char **av)
 	if (!ft_strlen(av[2]))
 		exit(0);
 	send_bit(ft_atoi(av[1]), av[2]);
-	while(1)
+	while (1)
 		pause();
 }

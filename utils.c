@@ -22,7 +22,7 @@ int	ft_atoi(char *str)
 	return (number);
 }
 
-size_t   ft_strlen(const char *s)
+size_t	ft_strlen(const char *s)
 {
 	size_t	i;
 
@@ -44,4 +44,19 @@ void	ft_putunbr(unsigned int n)
 	if (n >= 10)
 		ft_putunbr((n / 10));
 	write(1, &"0123456789"[n % 10], 1);
+}
+
+int	ft_verify_input(int ac, char **av)
+{
+	int	i;
+
+	i = -1;
+	if (ac != 3)
+		return (1);
+	while (av[1][++i])
+	{
+		if (ft_isdigit(av[1][i]) == 0)
+			return (1);
+	}
+	return (0);
 }

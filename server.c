@@ -47,7 +47,7 @@ static char	*add_char(char *str, char c)
 	return (new);
 }
 
-char *print_free(char *str)
+char	*print_free(char *str)
 {
 	write(1, str, ft_strlen(str));
 	free(str);
@@ -83,7 +83,7 @@ void	s_handler(int sig, siginfo_t *siginfo, void *unused)
 		kill(c_pid, SIGUSR2);
 }
 
-int main(void)
+int	main(void)
 {
 	struct sigaction	sa;
 	sigset_t			mask;
