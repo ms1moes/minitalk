@@ -45,18 +45,3 @@ void	ft_putunbr(unsigned int n)
 		ft_putunbr((n / 10));
 	write(1, &"0123456789"[n % 10], 1);
 }
-
-int	ft_verify_input(int ac, char **av)
-{
-	int	i;
-
-	i = -1;
-	if (ac != 3)
-		return (1);
-	while (av[1][++i])
-	{
-		if (ft_isdigit(av[1][i]) == 0)
-			return (1);
-	}
-	return (0);
-}

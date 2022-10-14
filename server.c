@@ -43,6 +43,7 @@ static char	*add_char(char *str, char c)
 	free(str);
 	new[i++] = c;
 	new[i] = '\0';
+	c = 0;
 	return (new);
 }
 
@@ -61,6 +62,8 @@ void	s_handler(int sig, siginfo_t *siginfo, void *unused)
 	static pid_t			c_pid = 0;
 
 	(void)unused;
+	if (c_pid)
+		c <<= 1;
 	if (!c_pid)
 		c_pid = siginfo->si_pid;
 	c |= (sig == SIGUSR1);
@@ -74,14 +77,10 @@ void	s_handler(int sig, siginfo_t *siginfo, void *unused)
 			return ;
 		}
 		str = add_char(str, c);
-		c = 0;
 		kill(c_pid, SIGUSR1);
 	}
 	else
-	{
-		c <<= 1;
 		kill(c_pid, SIGUSR2);
-	}
 }
 
 int main(void)
