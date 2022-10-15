@@ -19,7 +19,7 @@ void	end_prog(pid_t s_pid)
 	i = 8;
 	while (i--)
 	{
-		usleep(50);
+		usleep(100);
 		kill(s_pid, SIGUSR2);
 	}
 	write(1, "\nfinished successfully\n", 22);
