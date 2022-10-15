@@ -19,7 +19,7 @@ void	end_prog(pid_t s_pid)
 	i = 8;
 	while (i--)
 	{
-		usleep(100);
+		usleep(50);
 		kill(s_pid, SIGUSR2);
 	}
 	write(1, "\nfinished successfully\n", 22);
@@ -46,16 +46,18 @@ void	send_bit(pid_t pid, char *s)
 		if (!c)
 			end_prog(s_pid);
 	}
-	if (c >> --i & 1)
+	if (c && c >> --i & 1)
 		kill(s_pid, SIGUSR1);
-	else
+	else if (c)
 		kill(s_pid, SIGUSR2);
 }
 
-void	c_handler(int sig)
+void	c_handler(int sig, siginfo_t *siginfo, void *unused)
 {
 	static int	bytes = 0;
 
+	(void)siginfo;
+	(void)unused;
 	if (sig == SIGUSR1)
 	{
 		write(1, "\rnumber of bytes:  ", 19);
@@ -66,13 +68,20 @@ void	c_handler(int sig)
 
 int	main(int ac, char **av)
 {
+	struct sigaction	sa;
+	sigset_t 			mask;
+
 	if (ft_verify_input(ac, av))
 	{
 		write(1, "Error: invalid input\n", 21);
 		return (1);
 	}
-	signal(SIGUSR1, c_handler);
-	signal(SIGUSR2, c_handler);
+	sigemptyset(&mask);
+	sa.sa_mask = mask;
+	sa.sa_flags = SA_SIGINFO | SA_RESTART;
+	sa.sa_sigaction = c_handler;
+	sigaction(SIGUSR1, &sa, NULL);
+	sigaction(SIGUSR2, &sa, NULL);
 	if (!ft_strlen(av[2]))
 		exit(0);
 	send_bit(ft_atoi(av[1]), av[2]);

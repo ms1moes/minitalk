@@ -91,7 +91,7 @@ int	main(void)
 	write(1, "Server PID: ", 12);
 	ft_putunbr(getpid());
 	write(1, "\n", 1);
-	sigfillset(&mask);
+	sigemptyset(&mask);
 	sa.sa_flags = SA_SIGINFO | SA_RESTART;
 	sa.sa_mask = mask;
 	sa.sa_sigaction = s_handler;
