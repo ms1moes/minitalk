@@ -52,12 +52,10 @@ void	send_bit(pid_t pid, char *s)
 		kill(s_pid, SIGUSR2);
 }
 
-void	c_handler(int sig, siginfo_t *siginfo, void *unused)
+void	c_handler(int sig)
 {
 	static int	bytes = 0;
 
-	(void)siginfo;
-	(void)unused;
 	if (sig == SIGUSR1)
 	{
 		write(1, "\rnumber of bytes:  ", 19);
@@ -78,8 +76,8 @@ int	main(int ac, char **av)
 	}
 	sigemptyset(&mask);
 	sa.sa_mask = mask;
-	sa.sa_flags = SA_SIGINFO | SA_RESTART;
-	sa.sa_sigaction = c_handler;
+	sa.sa_flags = SA_RESTART;
+	sa.sa_handler = c_handler;
 	sigaction(SIGUSR1, &sa, NULL);
 	sigaction(SIGUSR2, &sa, NULL);
 	if (!ft_strlen(av[2]))
